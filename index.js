@@ -149,3 +149,53 @@ app.post('/search', (req, res) => {
         }
     });
 });
+
+
+//Customers
+
+app.post('/insertCustomer', (req, res) => {
+    let cus = req.body;
+    var query = "INSERT INTO customers(customer_info) VALUES (?)"
+    mysqlConnection.query(query, [cus.customer_info], (err, rows, fields) => {
+            console.log(query);
+            if (!err) {
+            res.send({ isSuccess: true })
+        } else {
+            res.send({ isSuccess: false })
+            console.log(err);
+        }
+    });
+});
+
+app.post('/customerLogin', (req, res) => {
+    let cus = req.body;
+    var query = "SELECT * FROM customers WHERE JSON_UNQUOTE(JSON_EXTRACT(`customer_info`, '$.email')) = ? AND JSON_UNQUOTE(JSON_EXTRACT(`customer_info`, '$.password')) =?"
+    mysqlConnection.query(query, [cus.email,cus.password], (err, rows, fields) => {
+            console.log(query);
+            if (!err) {
+                if(rows.length == 0){
+                    res.send([{ isLoggedIn: false }])
+                }else{
+                    var g = rows;
+                    g[0].isLoggedIn = true
+                    res.send(g)
+                }
+        } else {
+            res.send({ isSuccess: false })
+            console.log(err);
+        }
+    });
+});
+
+//Silinip admin tarafına taşınacak
+app.get('/getAllCustomers', (req, res) => {
+    mysqlConnection.query('SELECT * FROM `customers`', (err, rows, fields) => {
+        if (!err) {
+            res.send(rows);
+        } else {
+            console.log(err);
+        }
+    });
+});
+
+
