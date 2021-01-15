@@ -156,15 +156,27 @@ app.post('/search', (req, res) => {
 app.post('/insertCustomer', (req, res) => {
     let cus = req.body;
     var query = "INSERT INTO customers(customer_info) VALUES (?)"
-    mysqlConnection.query(query, [cus.customer_info], (err, rows, fields) => {
-            console.log(query);
-            if (!err) {
-            res.send({ isSuccess: true })
+    var checkUser = "SELECT * FROM customers WHERE JSON_UNQUOTE(JSON_EXTRACT(`customer_info`, '$.email')) ='"+JSON.parse(req.body.customer_info).email+"'";
+    mysqlConnection.query(checkUser, (err, rows, fields) => {
+        if (!err) {
+            if(rows.length == 0){
+                mysqlConnection.query(query, [cus.customer_info], (err, rows, fields) => {
+                    console.log(query);
+                    if (!err) {
+                    res.send({ isSuccess: true })
+                } else {
+                    res.send({ isSuccess: false })
+                    console.log(err);
+                }
+            });
+            }else{
+                res.send({ isSuccess: true, errorMessage:"Lütfen farklı bir mail adresi ile deneyiniz." })
+            }
         } else {
-            res.send({ isSuccess: false })
             console.log(err);
         }
     });
+    
 });
 
 app.post('/customerLogin', (req, res) => {
@@ -197,5 +209,4 @@ app.get('/getAllCustomers', (req, res) => {
         }
     });
 });
-
 
