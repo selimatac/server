@@ -52,13 +52,10 @@ app.post('/insertCategory', (req, res) => {
     let cat = req.body;
     var query = "INSERT INTO categories(name, saved_by, parent_id) VALUES (?,?,?)"
     mysqlConnection.query(query, [cat.name, cat.saved_by, cat.parent_id], (err, rows, fields) => {
-        console.log(query, cat)
-        console.log(cat)
         if (!err) {
             res.send({ isSuccess: true })
         } else {
             res.send({ isSuccess: false })
-            console.log(err);
         }
     });
 });
@@ -67,13 +64,10 @@ app.put('/updateCategory', (req, res) => {
     let cat = req.body;
     var query = "UPDATE categories SET name=?,saved_by=? WHERE id = ?"
     mysqlConnection.query(query, [cat.name, cat.saved_by, cat.id], (err, rows, fields) => {
-        console.log(query, cat)
-        console.log(cat)
         if (!err) {
             res.send({ isSuccess: true })
         } else {
             res.send({ isSuccess: false })
-            console.log(err);
         }
     });
 });
@@ -114,13 +108,10 @@ app.post('/insertProduct', (req, res) => {
     let product = req.body;
     var query = "INSERT INTO products(product_info, saved_by) VALUES (?,?)"
     mysqlConnection.query(query, [product.product_info, product.saved_by], (err, rows, fields) => {
-        console.log(query, product)
-        console.log(product)
         if (!err) {
             res.send({ isSuccess: true })
         } else {
             res.send({ isSuccess: false })
-            console.log(err);
         }
     });
 });
@@ -161,12 +152,10 @@ app.post('/insertCustomer', (req, res) => {
         if (!err) {
             if(rows.length == 0){
                 mysqlConnection.query(query, [cus.customer_info], (err, rows, fields) => {
-                    console.log(query);
                     if (!err) {
                     res.send({ isSuccess: true })
                 } else {
                     res.send({ isSuccess: false })
-                    console.log(err);
                 }
             });
             }else{
@@ -183,7 +172,6 @@ app.post('/customerLogin', (req, res) => {
     let cus = req.body;
     var query = "SELECT * FROM customers WHERE JSON_UNQUOTE(JSON_EXTRACT(`customer_info`, '$.email')) = ? AND JSON_UNQUOTE(JSON_EXTRACT(`customer_info`, '$.password')) =?"
     mysqlConnection.query(query, [cus.email,cus.password], (err, rows, fields) => {
-            console.log(query);
             if (!err) {
                 if(rows.length == 0){
                     res.send([{ isLoggedIn: false }])
@@ -194,7 +182,6 @@ app.post('/customerLogin', (req, res) => {
                 }
         } else {
             res.send({ isSuccess: false })
-            console.log(err);
         }
     });
 });
